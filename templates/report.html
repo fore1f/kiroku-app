@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>しびれ・こわばり記録レポート</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             background-color: #fff;
@@ -54,6 +55,8 @@
     <div class="container">
         <h1>しびれ・こわばり記録レポート</h1>
         <p><strong>対象期間:</strong> {{ start_date }} 〜 {{ end_date }}</p>
+
+        <div style="width: 80%; margin: auto;"><canvas id="myChart"></canvas></div>
 
         <button onclick="window.print()" class="no-print print-button">このページを印刷する</button>
 
@@ -135,5 +138,40 @@
             <a href="/">記録ページに戻る</a>
         </div>
     </div>
+
+    <script>
+        const chartData = JSON.parse('{{ chart_data | tojson | safe }}');
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '症状の強さの推移'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        title: {
+                            display: true,
+                            text: '強さ (0-10)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '日付'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
