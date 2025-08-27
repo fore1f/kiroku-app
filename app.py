@@ -220,10 +220,5 @@ def init_db_command():
     db.create_all()
     print("データベースを初期化しました。")
 
-# アプリケーションコンテキスト内でデータベーステーブルを作成
-# gunicorn が app オブジェクトをロードする際に実行されるようにする
-with app.app_context():
-    db.create_all()
-
 if __name__ == '__main__':
     app.run(debug=True)
