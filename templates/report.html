@@ -80,7 +80,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% set stiffness = record.stiffness %}
+                            {% set stiffness = record.stiffness_data %}
                             {% if stiffness and (stiffness.parts or (stiffness.strength.R_Knee|int > 0) or (stiffness.strength.L_Knee|int > 0)) %}
                                 <ul>
                                     {% set r_hand_strength = stiffness.strength.R_Hand|int %}
