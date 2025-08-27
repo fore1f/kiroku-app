@@ -169,6 +169,15 @@ def delete_record(record_id):
     flash('記録を削除しました。', 'success')
     return redirect(url_for('index'))
 
+@app.route('/delete_account', methods=['POST'])
+@login_required
+def delete_account():
+    db.session.delete(current_user)
+    db.session.commit()
+    logout_user()
+    flash('アカウントとすべての記録が削除されました。', 'info')
+    return redirect(url_for('login'))
+
 @app.route('/report')
 @login_required
 def report():
@@ -210,6 +219,11 @@ def init_db_command():
     """データベースを初期化します。"""
     db.create_all()
     print("データベースを初期化しました。")
+
+# アプリケーションコンテキスト内でデータベーステーブルを作成
+# gunicorn が app オブジェクトをロードする際に実行されるようにする
+with app.app_context():
+    db.create_all()
 
 if __name__ == '__main__':
     app.run(debug=True)
