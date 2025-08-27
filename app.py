@@ -1,4 +1,3 @@
-
 import os
 import json
 from datetime import datetime
@@ -20,10 +19,6 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message = "このページにアクセスするにはログインが必要です。"
-
-# アプリケーションコンテキスト内でデータベーステーブルを作成（Renderでの初期化用）
-with app.app_context():
-    db.create_all()
 
 # --- 部位定義 ---
 STIFFNESS_FINGER_PARTS = {
@@ -215,6 +210,11 @@ def init_db_command():
     """データベースを初期化します。"""
     db.create_all()
     print("データベースを初期化しました。")
+
+# アプリケーションコンテキスト内でデータベーステーブルを作成
+# gunicorn が app オブジェクトをロードする際に実行されるようにする
+with app.app_context():
+    db.create_all()
 
 if __name__ == '__main__':
     app.run(debug=True)
