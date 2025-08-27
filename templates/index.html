@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}記録ページ{% endblock %}
+
+{% block content %}
+    <script>
+        // このスクリプトは、本来は外部ファイルに分けるのが望ましいですが、簡潔さのためにここに記述します。
+        function updateValue(id, value) {
+            document.getElementById(id).textContent = value;
+        }
+    </script>
+
+    <h1 class="mb-4">しびれ・こわばり記録</h1>
+
+    <form action="{{ url_for('index') }}" method="post" class="record-form bg-light p-4 rounded-3">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="date" class="form-label">日付</label>
+                <input type="date" class="form-control" id="date" name="date" value="{{ today }}" required>
+            </div>
+        </div>
+
+        <fieldset class="mb-4">
+            <legend class="h5">しびれの記録</legend>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="numbness_strength" class="form-label">強さ: <span id="numbness-strength-value">0</span> / 10</label>
+                    <input type="range" class="form-range" id="numbness_strength" name="numbness_strength" min="0" max="10" value="0" oninput="updateValue('numbness-strength-value', this.value)">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">部位（複数選択可）</label>
+                    <div class="checkbox-group">
+                        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="numbness_parts" value="右手" id="np_rh"><label class="form-check-label" for="np_rh">右手</label></div>
+                        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="numbness_parts" value="左手" id="np_lh"><label class="form-check-label" for="np_lh">左手</label></div>
+                        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="numbness_parts" value="両手" id="np_bh"><label class="form-check-label" for="np_bh">両手</label></div>
+                        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="numbness_parts" value="右足" id="np_rf"><label class="form-check-label" for="np_rf">右足</label></div>
+                        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="numbness_parts" value="左足" id="np_lf"><label class="form-check-label" for="np_lf">左足</label></div>
+                        <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="numbness_parts" value="両足" id="np_bf"><label class="form-check-label" for="np_bf">両足</label></div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset class="mb-4">
+            <legend class="h5">こわばりの記録</legend>
+            <div class="row">
+                <!-- 左手 -->
+                <div class="col-md-6 border-end mb-3">
+                    <div class="mb-3">
+                        <label for="stiffness_strength_L_Hand" class="form-label">左手の強さ: <span id="stiffness-value-L_Hand">0</span> / 10</label>
+                        <input type="range" class="form-range" id="stiffness_strength_L_Hand" name="stiffness_strength_L_Hand" min="0" max="10" value="0" oninput="updateValue('stiffness-value-L_Hand', this.value)">
+                    </div>
+                    <label class="form-label">こわばる指（左手）</label>
+                    <div class="checkbox-group-grid">
+                        {% for part_id, part_name in stiffness_finger_parts.L.items() %}
+                        <div class="form-check"><input class="form-check-input" type="checkbox" name="stiffness_parts" value="{{ part_id }}" id="{{part_id}}"><label class="form-check-label" for="{{part_id}}">{{ part_name }}</label></div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- 右手 -->
+                <div class="col-md-6 mb-3">
+                    <div class="mb-3">
+                        <label for="stiffness_strength_R_Hand" class="form-label">右手の強さ: <span id="stiffness-value-R_Hand">0</span> / 10</label>
+                        <input type="range" class="form-range" id="stiffness_strength_R_Hand" name="stiffness_strength_R_Hand" min="0" max="10" value="0" oninput="updateValue('stiffness-value-R_Hand', this.value)">
+                    </div>
+                    <label class="form-label">こわばる指（右手）</label>
+                    <div class="checkbox-group-grid">
+                        {% for part_id, part_name in stiffness_finger_parts.R.items() %}
+                        <div class="form-check"><input class="form-check-input" type="checkbox" name="stiffness_parts" value="{{ part_id }}" id="{{part_id}}"><label class="form-check-label" for="{{part_id}}">{{ part_name }}</label></div>
+                        {% endfor %}
+                    </div>
+                </div>
+                 <!-- 膝 -->
+                <div class="col-12 mt-3 pt-3 border-top">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="stiffness_strength_L_Knee" class="form-label">左膝の強さ: <span id="stiffness-value-L_Knee">0</span> / 10</label>
+                            <input type="range" class="form-range" id="stiffness_strength_L_Knee" name="stiffness_strength_L_Knee" min="0" max="10" value="0" oninput="updateValue('stiffness-value-L_Knee', this.value)">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="stiffness_strength_R_Knee" class="form-label">右膝の強さ: <span id="stiffness-value-R_Knee">0</span> / 10</label>
+                            <input type="range" class="form-range" id="stiffness_strength_R_Knee" name="stiffness_strength_R_Knee" min="0" max="10" value="0" oninput="updateValue('stiffness-value-R_Knee', this.value)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="mb-3">
+            <label for="memo" class="form-label">メモ</label>
+            <textarea class="form-control" id="memo" name="memo" rows="3"></textarea>
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">今日の記録を保存する</button>
+        </div>
+    </form>
+
+    <hr class="my-5">
+
+    <div class="report-section bg-light p-4 rounded-3 mb-5">
+        <h3 class="h4">レポート作成</h3>
+        <form action="{{ url_for('report') }}" method="get" target="_blank" class="row g-3 align-items-end">
+            <div class="col-md">
+                <label for="start_date" class="form-label">開始日</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" required>
+            </div>
+            <div class="col-md">
+                <label for="end_date" class="form-label">終了日</label>
+                <input type="date" class="form-control" id="end_date" name="end_date" value="{{ today }}" required>
+            </div>
+            <div class="col-md-auto">
+                <button type="submit" class="btn btn-success">レポートを作成</button>
+            </div>
+        </form>
+    </div>
+
+    <h2 class="mb-4">記録一覧</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">日付</th>
+                    <th scope="col">しびれ</th>
+                    <th scope="col">こわばり</th>
+                    <th scope="col">メモ</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ record.date.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        {% if record.numbness_strength > 0 %}
+                            <strong>強さ:</strong> {{ record.numbness_strength }} / 10<br>
+                            <strong>部位:</strong> {{ record.numbness_parts }}
+                        {% else %}
+                            <span class="text-muted">なし</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% set stiffness = record.stiffness_data %}
+                        {% if stiffness and (stiffness.parts or (stiffness.strength.R_Knee|int > 0) or (stiffness.strength.L_Knee|int > 0)) %}
+                            <ul class="list-unstyled mb-0">
+                                {% set r_hand_strength = stiffness.strength.R_Hand|int %}
+                                {% if r_hand_strength > 0 %}
+                                    <li>右手 (強さ: {{ r_hand_strength }}): 
+                                        {% set r_fingers = [] %}
+                                        {% for part in stiffness.parts %}
+                                            {% if part in stiffness_finger_parts.R %}
+                                                {% set _ = r_fingers.append(part|stiffness_name) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        <small>{{ r_fingers|join(', ') }}</small>
+                                    </li>
+                                {% endif %}
+                                {% set l_hand_strength = stiffness.strength.L_Hand|int %}
+                                {% if l_hand_strength > 0 %}
+                                    <li>左手 (強さ: {{ l_hand_strength }}): 
+                                        {% set l_fingers = [] %}
+                                        {% for part in stiffness.parts %}
+                                            {% if part in stiffness_finger_parts.L %}
+                                                {% set _ = l_fingers.append(part|stiffness_name) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        <small>{{ l_fingers|join(', ') }}</small>
+                                    </li>
+                                {% endif %}
+                                {% if stiffness.strength.R_Knee|int > 0 %}
+                                    <li>右膝 (強さ: {{ stiffness.strength.R_Knee }})</li>
+                                {% endif %}
+                                {% if stiffness.strength.L_Knee|int > 0 %}
+                                    <li>左膝 (強さ: {{ stiffness.strength.L_Knee }})</li>
+                                {% endif %}
+                            </ul>
+                        {% else %}
+                            <span class="text-muted">なし</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ record.memo }}</td>
+                    <td>
+                        <form action="{{ url_for('delete_record', record_id=record.id) }}" method="post" onsubmit="return confirm('この記録を本当に削除しますか？');">
+                            <button type="submit" class="btn btn-sm btn-danger">削除</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">まだ記録がありません。</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

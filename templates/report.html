@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>しびれ・こわばり記録レポート</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-color: #fff;
+        }
+        .container {
+            box-shadow: none;
+            padding: 0;
+        }
+        .print-button {
+            margin: 20px 0;
+            padding: 12px 20px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .print-button:hover {
+            background-color: #229954;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                margin: 20px;
+            }
+            .no-print {
+                display: none;
+            }
+            .container {
+                padding: 0;
+                margin: 0;
+                width: 100%;
+                max-width: 100%;
+            }
+            table {
+                font-size: 12px;
+            }
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>しびれ・こわばり記録レポート</h1>
+        <p><strong>対象期間:</strong> {{ start_date }} 〜 {{ end_date }}</p>
+
+        <button onclick="window.print()" class="no-print print-button">このページを印刷する</button>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>日付</th>
+                        <th>しびれ</th>
+                        <th>こわばり</th>
+                        <th>メモ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td>{{ record.date }}</td>
+                        <td>
+                            {% if record.numbness_strength and record.numbness_strength|int > 0 %}
+                                <strong>強さ:</strong> {{ record.numbness_strength }} / 10<br>
+                                <strong>部位:</strong> {{ record.numbness_parts }}
+                            {% else %}
+                                なし
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% set stiffness = record.stiffness %}
+                            {% if stiffness and (stiffness.parts or (stiffness.strength.R_Knee|int > 0) or (stiffness.strength.L_Knee|int > 0)) %}
+                                <ul>
+                                    {% set r_hand_strength = stiffness.strength.R_Hand|int %}
+                                    {% if r_hand_strength > 0 %}
+                                        <li>右手 (強さ: {{ r_hand_strength }}): 
+                                            {% set r_fingers = [] %}
+                                            {% for part in stiffness.parts %}
+                                                {% if part in stiffness_finger_parts.R %}
+                                                    {% set _ = r_fingers.append(part|stiffness_name) %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {{ r_fingers|join(', ') }}
+                                        </li>
+                                    {% endif %}
+
+                                    {% set l_hand_strength = stiffness.strength.L_Hand|int %}
+                                    {% if l_hand_strength > 0 %}
+                                        <li>左手 (強さ: {{ l_hand_strength }}): 
+                                            {% set l_fingers = [] %}
+                                            {% for part in stiffness.parts %}
+                                                {% if part in stiffness_finger_parts.L %}
+                                                    {% set _ = l_fingers.append(part|stiffness_name) %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {{ l_fingers|join(', ') }}
+                                        </li>
+                                    {% endif %}
+
+                                    {% if stiffness.strength.R_Knee|int > 0 %}
+                                        <li>右膝 (強さ: {{ stiffness.strength.R_Knee }})</li>
+                                    {% endif %}
+                                    {% if stiffness.strength.L_Knee|int > 0 %}
+                                        <li>左膝 (強さ: {{ stiffness.strength.L_Knee }})</li>
+                                    {% endif %}
+                                </ul>
+                            {% else %}
+                                なし
+                            {% endif %}
+                        </td>
+                        <td>{{ record.memo }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">対象期間内に記録はありません。</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="no-print" style="margin-top: 20px;">
+            <a href="/">記録ページに戻る</a>
+        </div>
+    </div>
+</body>
+</html>
