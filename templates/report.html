@@ -140,7 +140,7 @@
     </div>
 
     <script>
-        const chartData = JSON.parse('{{ chart_data | tojson | safe }}');
+        const chartData = JSON.parse('{{ chart_data | safe }}');
 
         const ctx = document.getElementById('myChart').getContext('2d');
         new Chart(ctx, {
