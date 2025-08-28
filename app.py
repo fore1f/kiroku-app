@@ -126,7 +126,7 @@ def index():
 
     return render_template('index.html', 
                            records=records, 
-                           today=datetime.now().strftime('%Y-%m-%d'),
+                           today=datetime.now(JST).strftime('%Y-%m-%d'),
                            stiffness_finger_parts=STIFFNESS_FINGER_PARTS)
 
 @app.route('/register', methods=['GET', 'POST'])
