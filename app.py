@@ -224,7 +224,7 @@ def report():
         Record.user_id == current_user.id,
         Record.created_at >= start_date_utc,
         Record.created_at <= end_date_utc
-    ).order_by(Record.created_at.desc()).all()
+    ).order_by(Record.date.desc(), Record.created_at.desc()).all()
 
     # グラフ用データを作成
     labels = []
