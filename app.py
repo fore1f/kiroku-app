@@ -42,6 +42,7 @@ class User(UserMixin, db.Model):
 class Record(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     numbness_strength = db.Column(db.Integer, default=0)
     numbness_parts = db.Column(db.String(200), default='')
     stiffness = db.Column(db.Text, default='{}')
@@ -95,7 +96,7 @@ def index():
         flash('記録が保存されました。', 'success')
         return redirect(url_for('index'))
 
-    records = Record.query.filter_by(author=current_user).order_by(Record.date.desc()).all()
+    records = Record.query.filter_by(author=current_user).order_by(Record.created_at.desc()).all()
     for record in records:
         try:
             record.stiffness_data = json.loads(record.stiffness)
@@ -199,24 +200,14 @@ def report():
         Record.user_id == current_user.id,
         Record.date >= start_date,
         Record.date <= end_date
-    ).order_by(Record.date.asc()).all()
+    ).order_by(Record.created_at.asc()).all()
 
     # グラフ用データを作成
-    labels = [record.date.strftime('%m/%d') for record in records]
+    labels = [record.created_at.strftime('%m/%d %H:%M') for record in records]
+    numbness_data = [record.numbness_strength for record in records]
     
-    # しびれグラフ用データ
-    numbness_chart_data = {
-        'labels': labels,
-        'datasets': [
-            {'label': 'しびれの強さ', 'data': [record.numbness_strength for record in records], 'borderColor': 'rgba(255, 99, 132, 1)', 'fill': False},
-        ]
-    }
-
-    # こわばり（手）グラフ用データ
     stiffness_r_hand_data = []
     stiffness_l_hand_data = []
-    
-    # こわばり（膝）グラフ用データ
     stiffness_r_knee_data = []
     stiffness_l_knee_data = []
 
@@ -236,19 +227,14 @@ def report():
             stiffness_l_knee_data.append(0)
             record.stiffness_data = {'parts': [], 'strength': {}}
 
-    stiffness_hand_chart_data = {
+    chart_data = {
         'labels': labels,
         'datasets': [
-            {'label': 'こわばり(右手)', 'data': stiffness_r_hand_data, 'borderColor': 'rgba(54, 162, 235, 1)', 'fill': False},
-            {'label': 'こわばり(左手)', 'data': stiffness_l_hand_data, 'borderColor': 'rgba(75, 192, 192, 1)', 'fill': False},
-        ]
-    }
-
-    stiffness_knee_chart_data = {
-        'labels': labels,
-        'datasets': [
-            {'label': 'こわばり(右膝)', 'data': stiffness_r_knee_data, 'borderColor': 'rgba(255, 206, 86, 1)', 'fill': False},
-            {'label': 'こわばり(左膝)', 'data': stiffness_l_knee_data, 'borderColor': 'rgba(153, 102, 255, 1)', 'fill': False},
+            {'label': 'しびれの強さ', 'data': numbness_data, 'borderColor': 'rgba(255, 99, 132, 1)'},
+            {'label': 'こわばり(右手)', 'data': stiffness_r_hand_data, 'borderColor': 'rgba(54, 162, 235, 1)'},
+            {'label': 'こわばり(左手)', 'data': stiffness_l_hand_data, 'borderColor': 'rgba(75, 192, 192, 1)'},
+            {'label': 'こわばり(右膝)', 'data': stiffness_r_knee_data, 'borderColor': 'rgba(255, 206, 86, 1)'},
+            {'label': 'こわばり(左膝)', 'data': stiffness_l_knee_data, 'borderColor': 'rgba(153, 102, 255, 1)'},
         ]
     }
 
@@ -257,9 +243,7 @@ def report():
                            start_date=start_date_str, 
                            end_date=end_date_str,
                            stiffness_finger_parts=STIFFNESS_FINGER_PARTS,
-                           numbness_chart_data=json.dumps(numbness_chart_data), # JSON文字列として渡す
-                           stiffness_hand_chart_data=json.dumps(stiffness_hand_chart_data), # JSON文字列として渡す
-                           stiffness_knee_chart_data=json.dumps(stiffness_knee_chart_data)) # JSON文字列として渡す
+                           chart_data=json.dumps(chart_data)) # JSON文字列として渡す
 
 
 @app.cli.command("init-db")
@@ -267,6 +251,11 @@ def init_db_command():
     """データベースを初期化します。"""
     db.create_all()
     print("データベースを初期化しました。")
+
+# アプリケーションコンテキスト内でデータベーステーブルを作成
+# gunicorn が app オブジェクトをロードする際に実行されるようにする
+with app.app_context():
+    db.create_all()
 
 if __name__ == '__main__':
     app.run(debug=True)

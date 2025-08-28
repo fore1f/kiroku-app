@@ -84,7 +84,7 @@
                 <tbody>
                     {% for record in records %}
                     <tr>
-                        <td>{{ record.date }}</td>
+                        <td>{{ record.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                         <td>
                             {% if record.numbness_strength and record.numbness_strength|int > 0 %}
                                 <strong>強さ:</strong> {{ record.numbness_strength }} / 10<br>
