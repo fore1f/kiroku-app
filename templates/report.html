@@ -151,14 +151,15 @@
     </div>
 
     <script>
-        const numbnessChartData = {{ numbness_chart_data | tojson }};
-        const stiffnessHandChartData = {{ stiffness_hand_chart_data | tojson }};
-        const stiffnessKneeChartData = {{ stiffness_knee_chart_data | tojson }};
+        const chartData = {{ chart_data | tojson }};
 
         const numbnessCtx = document.getElementById('numbnessChart').getContext('2d');
         new Chart(numbnessCtx, {
             type: 'line',
-            data: numbnessChartData,
+            data: {
+                labels: chartData.labels,
+                datasets: [chartData.datasets[0]]
+            },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -190,7 +191,10 @@
         const stiffnessHandCtx = document.getElementById('stiffnessHandChart').getContext('2d');
         new Chart(stiffnessHandCtx, {
             type: 'line',
-            data: stiffnessHandChartData,
+            data: {
+                labels: chartData.labels,
+                datasets: [chartData.datasets[1], chartData.datasets[2]]
+            },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -222,7 +226,10 @@
         const stiffnessKneeCtx = document.getElementById('stiffnessKneeChart').getContext('2d');
         new Chart(stiffnessKneeCtx, {
             type: 'line',
-            data: stiffnessKneeChartData,
+            data: {
+                labels: chartData.labels,
+                datasets: [chartData.datasets[3], chartData.datasets[4]]
+            },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
