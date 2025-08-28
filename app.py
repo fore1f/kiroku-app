@@ -212,14 +212,11 @@ def report():
 
     try:
         start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
-        # 期間の終わりをその日の最後に設定
-        end_date = end_date.replace(hour=23, minute=59, second=59)
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d').replace(hour=23, minute=59, second=59)
     except ValueError:
         flash('日付の形式が正しくありません。', 'danger')
         return redirect(url_for('index'))
 
-    # ユーザーの入力はJSTと仮定し、UTCに変換してクエリを発行
     start_date_utc = JST.localize(start_date).astimezone(pytz.utc)
     end_date_utc = JST.localize(end_date).astimezone(pytz.utc)
 
@@ -230,7 +227,12 @@ def report():
     ).order_by(Record.created_at.asc()).all()
 
     # グラフ用データを作成
-    labels = [record.created_at.replace(tzinfo=pytz.utc).astimezone(JST).strftime('%m/%d %H:%M') for record in records]
+    labels = []
+    for record in records:
+        jst_time_str = record.created_at.replace(tzinfo=pytz.utc).astimezone(JST).strftime('%H:%M')
+        date_str = record.date.strftime('%m/%d')
+        labels.append(f"{date_str} {jst_time_str}")
+
     numbness_data = [record.numbness_strength for record in records]
     
     stiffness_r_hand_data = []
