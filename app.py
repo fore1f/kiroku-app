@@ -229,9 +229,9 @@ def report():
     # グラフ用データを作成
     labels = []
     for record in records:
-        jst_time_str = record.created_at.replace(tzinfo=pytz.utc).astimezone(JST).strftime('%H:%M')
-        date_str = record.date.strftime('%m/%d')
-        labels.append(f"{date_str} {jst_time_str}")
+        jst_time_part = record.created_at.replace(tzinfo=pytz.utc).astimezone(JST).strftime('%H:%M')
+        date_part = record.date.strftime('%m/%d')
+        labels.append(f"{date_part} {jst_time_part}")
 
     numbness_data = [record.numbness_strength for record in records]
     
