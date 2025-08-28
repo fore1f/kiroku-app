@@ -56,7 +56,14 @@
         <h1>しびれ・こわばり記録レポート</h1>
         <p><strong>対象期間:</strong> {{ start_date }} 〜 {{ end_date }}</p>
 
-        <div style="width: 80%; margin: auto;"><canvas id="myChart"></canvas></div>
+        <div style="width: 80%; margin: auto;">
+            <h2>しびれの強さの推移</h2>
+            <canvas id="numbnessChart"></canvas>
+        </div>
+        <div style="width: 80%; margin: auto; margin-top: 40px;">
+            <h2>こわばりの強さの推移</h2>
+            <canvas id="stiffnessChart"></canvas>
+        </div>
 
         <button onclick="window.print()" class="no-print print-button">このページを印刷する</button>
 
@@ -139,19 +146,52 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const chartData = JSON.parse('{{ chart_data | safe }}');
+        const numbnessChartData = JSON.parse('{{ numbness_chart_data | safe }}');
+        const stiffnessChartData = JSON.parse('{{ stiffness_chart_data | safe }}');
 
-        const ctx = document.getElementById('myChart').getContext('2d');
-        new Chart(ctx, {
+        const numbnessCtx = document.getElementById('numbnessChart').getContext('2d');
+        new Chart(numbnessCtx, {
             type: 'line',
-            data: chartData,
+            data: numbnessChartData,
             options: {
                 responsive: true,
                 plugins: {
                     title: {
                         display: true,
-                        text: '症状の強さの推移'
+                        text: 'しびれの強さの推移'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        title: {
+                            display: true,
+                            text: '強さ (0-10)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '日付'
+                        }
+                    }
+                }
+            }
+        });
+
+        const stiffnessCtx = document.getElementById('stiffnessChart').getContext('2d');
+        new Chart(stiffnessCtx, {
+            type: 'line',
+            data: stiffnessChartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'こわばりの強さの推移'
                     }
                 },
                 scales: {

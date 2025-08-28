@@ -203,8 +203,16 @@ def report():
 
     # グラフ用データを作成
     labels = [record.date.strftime('%m/%d') for record in records]
-    numbness_data = [record.numbness_strength for record in records]
     
+    # しびれグラフ用データ
+    numbness_chart_data = {
+        'labels': labels,
+        'datasets': [
+            {'label': 'しびれの強さ', 'data': [record.numbness_strength for record in records], 'borderColor': 'rgba(255, 99, 132, 1)', 'fill': False},
+        ]
+    }
+
+    # こわばりグラフ用データ
     stiffness_r_hand_data = []
     stiffness_l_hand_data = []
     stiffness_r_knee_data = []
@@ -218,7 +226,7 @@ def report():
             stiffness_l_hand_data.append(int(strength.get('L_Hand', 0)))
             stiffness_r_knee_data.append(int(strength.get('R_Knee', 0)))
             stiffness_l_knee_data.append(int(strength.get('L_Knee', 0)))
-            record.stiffness_data = stiffness_dict
+            record.stiffness_data = stiffness_dict # テンプレートのテーブル表示用
         except json.JSONDecodeError:
             stiffness_r_hand_data.append(0)
             stiffness_l_hand_data.append(0)
@@ -226,14 +234,13 @@ def report():
             stiffness_l_knee_data.append(0)
             record.stiffness_data = {'parts': [], 'strength': {}}
 
-    chart_data = {
+    stiffness_chart_data = {
         'labels': labels,
         'datasets': [
-            {'label': 'しびれの強さ', 'data': numbness_data, 'borderColor': 'rgba(255, 99, 132, 1)'},
-            {'label': 'こわばり(右手)', 'data': stiffness_r_hand_data, 'borderColor': 'rgba(54, 162, 235, 1)'},
-            {'label': 'こわばり(左手)', 'data': stiffness_l_hand_data, 'borderColor': 'rgba(75, 192, 192, 1)'},
-            {'label': 'こわばり(右膝)', 'data': stiffness_r_knee_data, 'borderColor': 'rgba(255, 206, 86, 1)'},
-            {'label': 'こわばり(左膝)', 'data': stiffness_l_knee_data, 'borderColor': 'rgba(153, 102, 255, 1)'},
+            {'label': 'こわばり(右手)', 'data': stiffness_r_hand_data, 'borderColor': 'rgba(54, 162, 235, 1)', 'fill': False},
+            {'label': 'こわばり(左手)', 'data': stiffness_l_hand_data, 'borderColor': 'rgba(75, 192, 192, 1)', 'fill': False},
+            {'label': 'こわばり(右膝)', 'data': stiffness_r_knee_data, 'borderColor': 'rgba(255, 206, 86, 1)', 'fill': False},
+            {'label': 'こわばり(左膝)', 'data': stiffness_l_knee_data, 'borderColor': 'rgba(153, 102, 255, 1)', 'fill': False},
         ]
     }
 
@@ -242,7 +249,8 @@ def report():
                            start_date=start_date_str, 
                            end_date=end_date_str,
                            stiffness_finger_parts=STIFFNESS_FINGER_PARTS,
-                           chart_data=json.dumps(chart_data)) # JSON文字列として渡す
+                           numbness_chart_data=json.dumps(numbness_chart_data), # JSON文字列として渡す
+                           stiffness_chart_data=json.dumps(stiffness_chart_data)) # JSON文字列として渡す
 
 
 @app.cli.command("init-db")
