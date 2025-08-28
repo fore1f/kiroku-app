@@ -151,7 +151,7 @@
     </div>
 
     <script>
-        const chartData = JSON.parse('{{ chart_data | safe }}');
+        const chartData = JSON.parse('{{ chart_data | tojson | safe }}');
 
         const commonOptions = {
             responsive: true,
