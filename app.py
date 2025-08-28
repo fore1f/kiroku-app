@@ -234,6 +234,8 @@ def report():
         labels.append(f"{date_part} {jst_time_part}")
 
     numbness_data = [record.numbness_strength for record in records]
+    labels.reverse()
+    numbness_data.reverse()
     
     stiffness_r_hand_data = []
     stiffness_l_hand_data = []
@@ -255,6 +257,11 @@ def report():
             stiffness_r_knee_data.append(0)
             stiffness_l_knee_data.append(0)
             record.stiffness_data = {'parts': [], 'strength': {}}
+
+    stiffness_r_hand_data.reverse()
+    stiffness_l_hand_data.reverse()
+    stiffness_r_knee_data.reverse()
+    stiffness_l_knee_data.reverse()
 
     chart_data = {
         'labels': labels,
