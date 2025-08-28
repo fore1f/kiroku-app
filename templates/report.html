@@ -84,7 +84,7 @@
                 <tbody>
                     {% for record in records %}
                     <tr>
-                        <td>{{ record.date.strftime('%Y-%m-%d') }}<br><small class="text-muted">{{ record.created_at | to_jst_time }}</small></td>
+                        <td>{{ record.date }}</td>
                         <td>
                             {% if record.numbness_strength and record.numbness_strength|int > 0 %}
                                 <strong>強さ:</strong> {{ record.numbness_strength }} / 10<br>
@@ -151,8 +151,37 @@
     </div>
 
     <script>
-        const chartData = {{ chart_data | tojson }};
+        const chartData = JSON.parse('{{ chart_data | safe }}');
 
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: '' // 各グラフで設定
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 10,
+                    title: {
+                        display: true,
+                        text: '強さ (0-10)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: '日付'
+                    },
+                    reverse: false // ここを明示的に false に設定
+                }
+            }
+        };
+
+        // しびれのグラフ
         const numbnessCtx = document.getElementById('numbnessChart').getContext('2d');
         new Chart(numbnessCtx, {
             type: 'line',
@@ -161,33 +190,18 @@
                 datasets: [chartData.datasets[0]]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                ...commonOptions,
                 plugins: {
+                    ...commonOptions.plugins,
                     title: {
-                        display: true,
+                        ...commonOptions.plugins.title,
                         text: 'しびれの強さの推移'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 10,
-                        title: {
-                            display: true,
-                            text: '強さ (0-10)'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: '日付'
-                        }
                     }
                 }
             }
         });
 
+        // こわばり（手）のグラフ
         const stiffnessHandCtx = document.getElementById('stiffnessHandChart').getContext('2d');
         new Chart(stiffnessHandCtx, {
             type: 'line',
@@ -196,33 +210,18 @@
                 datasets: [chartData.datasets[1], chartData.datasets[2]]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                ...commonOptions,
                 plugins: {
+                    ...commonOptions.plugins,
                     title: {
-                        display: true,
+                        ...commonOptions.plugins.title,
                         text: 'こわばり（手）の強さの推移'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 10,
-                        title: {
-                            display: true,
-                            text: '強さ (0-10)'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: '日付'
-                        }
                     }
                 }
             }
         });
 
+        // こわばり（膝）のグラフ
         const stiffnessKneeCtx = document.getElementById('stiffnessKneeChart').getContext('2d');
         new Chart(stiffnessKneeCtx, {
             type: 'line',
@@ -231,28 +230,12 @@
                 datasets: [chartData.datasets[3], chartData.datasets[4]]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                ...commonOptions,
                 plugins: {
+                    ...commonOptions.plugins,
                     title: {
-                        display: true,
+                        ...commonOptions.plugins.title,
                         text: 'こわばり（膝）の強さの推移'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 10,
-                        title: {
-                            display: true,
-                            text: '強さ (0-10)'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: '日付'
-                        }
                     }
                 }
             }
