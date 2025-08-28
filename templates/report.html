@@ -56,15 +56,15 @@
         <h1>しびれ・こわばり記録レポート</h1>
         <p><strong>対象期間:</strong> {{ start_date }} 〜 {{ end_date }}</p>
 
-        <div style="width: 80%; margin: auto;">
+        <div style="width: 80%; margin: auto; height: 250px;">
             <h2>しびれの強さの推移</h2>
             <canvas id="numbnessChart"></canvas>
         </div>
-        <div style="width: 80%; margin: auto; margin-top: 40px;">
+        <div style="width: 80%; margin: auto; margin-top: 20px; height: 250px;">
             <h2>こわばり（手）の強さの推移</h2>
             <canvas id="stiffnessHandChart"></canvas>
         </div>
-        <div style="width: 80%; margin: auto; margin-top: 40px;">
+        <div style="width: 80%; margin: auto; margin-top: 20px; height: 250px;">
             <h2>こわばり（膝）の強さの推移</h2>
             <canvas id="stiffnessKneeChart"></canvas>
         </div>
@@ -162,6 +162,7 @@
             data: numbnessChartData,
             options: {
                 responsive: true,
+                maintainAspectRatio: false, // ここを追加
                 plugins: {
                     title: {
                         display: true,
@@ -193,6 +194,7 @@
             data: stiffnessHandChartData,
             options: {
                 responsive: true,
+                maintainAspectRatio: false, // ここを追加
                 plugins: {
                     title: {
                         display: true,
@@ -224,6 +226,7 @@
             data: stiffnessKneeChartData,
             options: {
                 responsive: true,
+                maintainAspectRatio: false, // ここを追加
                 plugins: {
                     title: {
                         display: true,
