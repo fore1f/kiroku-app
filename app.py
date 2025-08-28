@@ -117,7 +117,7 @@ def index():
         flash('記録が保存されました。', 'success')
         return redirect(url_for('index'))
 
-    records = Record.query.filter_by(author=current_user).order_by(Record.created_at.desc()).all()
+    records = Record.query.filter_by(author=current_user).order_by(Record.date.desc(), Record.created_at.desc()).all()
     for record in records:
         try:
             record.stiffness_data = json.loads(record.stiffness)
