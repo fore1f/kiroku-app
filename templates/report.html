@@ -61,8 +61,12 @@
             <canvas id="numbnessChart"></canvas>
         </div>
         <div style="width: 80%; margin: auto; margin-top: 40px;">
-            <h2>こわばりの強さの推移</h2>
-            <canvas id="stiffnessChart"></canvas>
+            <h2>こわばり（手）の強さの推移</h2>
+            <canvas id="stiffnessHandChart"></canvas>
+        </div>
+        <div style="width: 80%; margin: auto; margin-top: 40px;">
+            <h2>こわばり（膝）の強さの推移</h2>
+            <canvas id="stiffnessKneeChart"></canvas>
         </div>
 
         <button onclick="window.print()" class="no-print print-button">このページを印刷する</button>
@@ -149,7 +153,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const numbnessChartData = JSON.parse('{{ numbness_chart_data | safe }}');
-        const stiffnessChartData = JSON.parse('{{ stiffness_chart_data | safe }}');
+        const stiffnessHandChartData = JSON.parse('{{ stiffness_hand_chart_data | safe }}');
+        const stiffnessKneeChartData = JSON.parse('{{ stiffness_knee_chart_data | safe }}');
 
         const numbnessCtx = document.getElementById('numbnessChart').getContext('2d');
         new Chart(numbnessCtx, {
@@ -182,16 +187,47 @@
             }
         });
 
-        const stiffnessCtx = document.getElementById('stiffnessChart').getContext('2d');
-        new Chart(stiffnessCtx, {
+        const stiffnessHandCtx = document.getElementById('stiffnessHandChart').getContext('2d');
+        new Chart(stiffnessHandCtx, {
             type: 'line',
-            data: stiffnessChartData,
+            data: stiffnessHandChartData,
             options: {
                 responsive: true,
                 plugins: {
                     title: {
                         display: true,
-                        text: 'こわばりの強さの推移'
+                        text: 'こわばり（手）の強さの推移'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        title: {
+                            display: true,
+                            text: '強さ (0-10)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '日付'
+                        }
+                    }
+                }
+            }
+        });
+
+        const stiffnessKneeCtx = document.getElementById('stiffnessKneeChart').getContext('2d');
+        new Chart(stiffnessKneeCtx, {
+            type: 'line',
+            data: stiffnessKneeChartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'こわばり（膝）の強さの推移'
                     }
                 },
                 scales: {
