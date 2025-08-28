@@ -226,23 +226,23 @@ def report():
         Record.created_at <= end_date_utc
     ).order_by(Record.created_at.desc()).all()
 
+    graph_records = records[::-1]
+
     # グラフ用データを作成
     labels = []
-    for record in records:
+    for record in graph_records:
         jst_time_part = record.created_at.replace(tzinfo=pytz.utc).astimezone(JST).strftime('%H:%M')
         date_part = record.date.strftime('%m/%d')
         labels.append(f"{date_part} {jst_time_part}")
 
-    numbness_data = [record.numbness_strength for record in records]
-    labels.reverse()
-    numbness_data.reverse()
+    numbness_data = [record.numbness_strength for record in graph_records]
     
     stiffness_r_hand_data = []
     stiffness_l_hand_data = []
     stiffness_r_knee_data = []
     stiffness_l_knee_data = []
 
-    for record in records:
+    for record in graph_records:
         try:
             stiffness_dict = json.loads(record.stiffness)
             strength = stiffness_dict.get('strength', {})
@@ -257,11 +257,6 @@ def report():
             stiffness_r_knee_data.append(0)
             stiffness_l_knee_data.append(0)
             record.stiffness_data = {'parts': [], 'strength': {}}
-
-    stiffness_r_hand_data.reverse()
-    stiffness_l_hand_data.reverse()
-    stiffness_r_knee_data.reverse()
-    stiffness_l_knee_data.reverse()
 
     chart_data = {
         'labels': labels,
