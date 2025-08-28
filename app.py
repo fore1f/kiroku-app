@@ -1,6 +1,6 @@
 import os
 import json
-from datetime import datetime
+from datetime import datetime, time
 import pytz
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask_sqlalchemy import SQLAlchemy
@@ -211,16 +211,22 @@ def report():
         return redirect(url_for('index'))
 
     try:
-        start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-        end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+        # 期間の終わりをその日の最後に設定
+        end_date = end_date.replace(hour=23, minute=59, second=59)
     except ValueError:
         flash('日付の形式が正しくありません。', 'danger')
         return redirect(url_for('index'))
 
+    # ユーザーの入力はJSTと仮定し、UTCに変換してクエリを発行
+    start_date_utc = JST.localize(start_date).astimezone(pytz.utc)
+    end_date_utc = JST.localize(end_date).astimezone(pytz.utc)
+
     records = Record.query.filter(
         Record.user_id == current_user.id,
-        Record.date >= start_date,
-        Record.date <= end_date
+        Record.created_at >= start_date_utc,
+        Record.created_at <= end_date_utc
     ).order_by(Record.created_at.asc()).all()
 
     # グラフ用データを作成
