@@ -72,6 +72,12 @@ def to_jst_filter(utc_dt):
         return ""
     return utc_dt.replace(tzinfo=pytz.utc).astimezone(JST).strftime('%Y-%m-%d %H:%M')
 
+@app.template_filter('to_jst_time')
+def to_jst_time_filter(utc_dt):
+    if utc_dt is None:
+        return ""
+    return utc_dt.replace(tzinfo=pytz.utc).astimezone(JST).strftime('%H:%M')
+
 # --- ヘルスチェック用ルート ---
 @app.route('/health')
 def health_check():
@@ -258,7 +264,7 @@ def report():
                            start_date=start_date_str, 
                            end_date=end_date_str,
                            stiffness_finger_parts=STIFFNESS_FINGER_PARTS,
-                           chart_data=chart_data) # json.dumps() を削除
+                           chart_data=chart_data)
 
 
 @app.cli.command("init-db")
