@@ -218,7 +218,7 @@ def report():
     ).order_by(Record.created_at.asc()).all()
 
     # グラフ用データを作成
-    labels = [record.created_at.strftime('%m/%d %H:%M') for record in records]
+    labels = [record.created_at.replace(tzinfo=pytz.utc).astimezone(JST).strftime('%m/%d %H:%M') for record in records]
     numbness_data = [record.numbness_strength for record in records]
     
     stiffness_r_hand_data = []
