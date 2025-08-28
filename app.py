@@ -1,6 +1,7 @@
 import os
 import json
 from datetime import datetime
+import pytz
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
@@ -19,6 +20,9 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message = "このページにアクセスするにはログインが必要です。"
+
+# --- タイムゾーン設定 ---
+JST = pytz.timezone('Asia/Tokyo')
 
 # --- 部位定義 ---
 STIFFNESS_FINGER_PARTS = {
@@ -61,6 +65,17 @@ def stiffness_name_filter(part_id):
         if part_id in hand:
             return hand[part_id]
     return part_id
+
+@app.template_filter('to_jst')
+def to_jst_filter(utc_dt):
+    if utc_dt is None:
+        return ""
+    return utc_dt.replace(tzinfo=pytz.utc).astimezone(JST).strftime('%Y-%m-%d %H:%M')
+
+# --- ヘルスチェック用ルート ---
+@app.route('/health')
+def health_check():
+    return "OK", 200
 
 # --- ルート定義 ---
 @app.route('/', methods=['GET', 'POST'])
