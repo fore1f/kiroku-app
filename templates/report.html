@@ -150,11 +150,10 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const numbnessChartData = JSON.parse('{{ numbness_chart_data | safe }}');
-        const stiffnessHandChartData = JSON.parse('{{ stiffness_hand_chart_data | safe }}');
-        const stiffnessKneeChartData = JSON.parse('{{ stiffness_knee_chart_data | safe }}');
+        const numbnessChartData = {{ numbness_chart_data | tojson }};
+        const stiffnessHandChartData = {{ stiffness_hand_chart_data | tojson }};
+        const stiffnessKneeChartData = {{ stiffness_knee_chart_data | tojson }};
 
         const numbnessCtx = document.getElementById('numbnessChart').getContext('2d');
         new Chart(numbnessCtx, {
@@ -162,7 +161,7 @@
             data: numbnessChartData,
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // ここを追加
+                maintainAspectRatio: false,
                 plugins: {
                     title: {
                         display: true,
@@ -194,7 +193,7 @@
             data: stiffnessHandChartData,
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // ここを追加
+                maintainAspectRatio: false,
                 plugins: {
                     title: {
                         display: true,
@@ -226,7 +225,7 @@
             data: stiffnessKneeChartData,
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // ここを追加
+                maintainAspectRatio: false,
                 plugins: {
                     title: {
                         display: true,

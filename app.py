@@ -258,7 +258,7 @@ def report():
                            start_date=start_date_str, 
                            end_date=end_date_str,
                            stiffness_finger_parts=STIFFNESS_FINGER_PARTS,
-                           chart_data=json.dumps(chart_data)) # JSON文字列として渡す
+                           chart_data=chart_data) # json.dumps() を削除
 
 
 @app.cli.command("init-db")
